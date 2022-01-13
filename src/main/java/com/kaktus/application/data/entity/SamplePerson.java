@@ -1,6 +1,6 @@
-package com.example.application.data.entity;
+package com.kaktus.application.data.entity;
 
-import com.example.application.data.AbstractEntity;
+import com.kaktus.application.data.AbstractEntity;
 import java.time.LocalDate;
 import javax.persistence.Entity;
 

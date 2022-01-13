@@ -1,7 +1,7 @@
-package com.example.application.data.generator;
+package com.kaktus.application.data.generator;
 
-import com.example.application.data.entity.SamplePerson;
-import com.example.application.data.service.SamplePersonRepository;
+import com.kaktus.application.data.entity.SamplePerson;
+import com.kaktus.application.data.service.SamplePersonRepository;
 import com.vaadin.exampledata.DataType;
 import com.vaadin.exampledata.ExampleDataGenerator;
 import com.vaadin.flow.spring.annotation.SpringComponent;

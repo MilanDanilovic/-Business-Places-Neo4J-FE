@@ -1,14 +1,22 @@
-package com.example.application.views.pregled;
+package com.kaktus.application.views.pregled;
 
-import com.example.application.data.entity.SamplePerson;
-import com.example.application.data.service.SamplePersonService;
-import com.example.application.views.MainLayout;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.ResolvedType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kaktus.application.data.entity.SamplePerson;
+import com.kaktus.application.data.model.Firma;
+import com.kaktus.application.data.service.SamplePersonService;
+import com.kaktus.application.feign_client.FirmaFeignClient;
+import com.kaktus.application.views.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasStyle;
+import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -28,7 +36,14 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Locale;
 import java.util.Optional;
+
+import net.minidev.json.JSONArray;
+import nonapi.io.github.classgraph.json.JSONDeserializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.artur.helpers.CrudServiceDataProvider;
 
@@ -51,6 +66,8 @@ public class PregledView extends Div implements BeforeEnterObserver {
     private TextField occupation;
     private Checkbox important;
 
+    ComboBox<Firma> firmaComboBox = new ComboBox<>();
+
     private Button cancel = new Button("Cancel");
     private Button save = new Button("Save");
 
@@ -60,8 +77,11 @@ public class PregledView extends Div implements BeforeEnterObserver {
 
     private SamplePersonService samplePersonService;
 
-    public PregledView(@Autowired SamplePersonService samplePersonService) {
+    private final FirmaFeignClient firmaFeignClient;
+
+    public PregledView(@Autowired SamplePersonService samplePersonService, FirmaFeignClient firmaFeignClient) {
         this.samplePersonService = samplePersonService;
+        this.firmaFeignClient = firmaFeignClient;
         addClassNames("pregled-view", "flex", "flex-col", "h-full");
         // Create UI
         SplitLayout splitLayout = new SplitLayout();
@@ -126,6 +146,10 @@ public class PregledView extends Div implements BeforeEnterObserver {
                 Notification.show("An exception happened while trying to store the samplePerson details.");
             }
         });
+
+
+        firmaComboBox.setItems(firmaFeignClient.findAllFirma());
+        firmaComboBox.setItemLabelGenerator((ItemLabelGenerator<Firma>) firma -> firma.getNaziv());
 
     }
 
@@ -194,6 +218,7 @@ public class PregledView extends Div implements BeforeEnterObserver {
         wrapper.setWidthFull();
         splitLayout.addToPrimary(wrapper);
         wrapper.add(grid);
+        wrapper.add(firmaComboBox);
     }
 
     private void refreshGrid() {

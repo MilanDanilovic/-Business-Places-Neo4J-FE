@@ -1,4 +1,4 @@
-package com.example.application.data;
+package com.kaktus.application.data;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;

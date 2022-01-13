@@ -1,6 +1,6 @@
-package com.example.application.views.about;
+package com.kaktus.application.views.about;
 
-import com.example.application.views.MainLayout;
+import com.kaktus.application.views.MainLayout;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Paragraph;
@@ -15,7 +15,7 @@ public class AboutView extends VerticalLayout {
     public AboutView() {
         setSpacing(false);
 
-        Image img = new Image("images/empty-plant.png", "placeholder plant");
+        Image img = new Image("img/empty-plant.png", "placeholder plant");
         img.setWidth("200px");
         add(img);
 
