@@ -22,3 +22,10 @@ vaadin-vertical-layout .layout-routes:hover{
     padding: 0 var(--lumo-space-m);
      background-color: var(--lumo-shade-90pct);
 }
+
+.drawer-route-links{
+    flex-direction: row-reverse;
+    display: flex;
+    justify-content: flex-end;
+    align-items: baseline;
+}

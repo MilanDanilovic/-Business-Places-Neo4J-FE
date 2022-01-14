@@ -68,26 +68,51 @@ public class MainLayout extends AppLayout {
 
         vlasnikLink = new RouterLink("Vlasnik",PregledView.class);
         vlasnikLink.setHighlightCondition(HighlightConditions.sameLocation());
+        Image vlanikImage = new Image("img/boss.png","boss");
+        vlanikImage.getStyle().set("margin-right","10px");
+        vlanikImage.setWidth("30px");
+        vlasnikLink.add(vlanikImage);
+        vlasnikLink.addClassName("drawer-route-links");
         vlasnikLink.addClassName("layout-routes");
         routerLinks.add(vlasnikLink);
 
         firmaLink = new RouterLink("Firma", PregledView.class);
         firmaLink.setHighlightCondition(HighlightConditions.sameLocation());
+        Image companyImage = new Image("img/company.png","company");
+        companyImage.getStyle().set("margin-right","10px");
+        companyImage.setWidth("30px");
+        firmaLink.add(companyImage);
+        firmaLink.addClassName("drawer-route-links");
         firmaLink.addClassName("layout-routes");
         routerLinks.add(firmaLink);
 
         poslovniProstorLink = new RouterLink("Poslovni Prostor", AboutView.class);
         poslovniProstorLink.setHighlightCondition(HighlightConditions.sameLocation());
+        Image poslovniProstorImage = new Image("img/office.png","office");
+        poslovniProstorImage.getStyle().set("margin-right","10px");
+        poslovniProstorImage.setWidth("30px");
+        poslovniProstorLink.add(poslovniProstorImage);
+        poslovniProstorLink.addClassName("drawer-route-links");
         poslovniProstorLink.addClassName("layout-routes");
         routerLinks.add(poslovniProstorLink);
 
         kancelarijaLink = new RouterLink("Kancelarija", AboutView.class);
         kancelarijaLink.setHighlightCondition(HighlightConditions.sameLocation());
+        Image kancelarijaLinkImage = new Image("img/office-chair.png","office-chair");
+        kancelarijaLinkImage.getStyle().set("margin-right","10px");
+        kancelarijaLinkImage.setWidth("30px");
+        kancelarijaLink.add(kancelarijaLinkImage);
+        kancelarijaLink.addClassName("drawer-route-links");
         kancelarijaLink.addClassName("layout-routes");
         routerLinks.add(kancelarijaLink);
 
         zaposleniLink = new RouterLink("Zaposleni", AboutView.class);
         zaposleniLink.setHighlightCondition(HighlightConditions.sameLocation());
+        Image zaposleniImage = new Image("img/worker.png","worker");
+        zaposleniImage.getStyle().set("margin-right","10px");
+        zaposleniImage.setWidth("30px");
+        zaposleniLink.add(zaposleniImage);
+        zaposleniLink.addClassName("drawer-route-links");
         zaposleniLink.addClassName("layout-routes");
         routerLinks.add(zaposleniLink);
 
