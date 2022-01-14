@@ -45,6 +45,7 @@ import java.util.Optional;
 import net.minidev.json.JSONArray;
 import nonapi.io.github.classgraph.json.JSONDeserializer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.vaadin.artur.helpers.CrudServiceDataProvider;
 
 @PageTitle("Pregled")

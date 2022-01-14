@@ -1,6 +1,7 @@
 package com.kaktus.application.views;
 
 import com.kaktus.application.views.about.AboutView;
+import com.kaktus.application.views.pages.ZaposleniView;
 import com.kaktus.application.views.pregled.PregledView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
@@ -106,7 +107,7 @@ public class MainLayout extends AppLayout {
         kancelarijaLink.addClassName("layout-routes");
         routerLinks.add(kancelarijaLink);
 
-        zaposleniLink = new RouterLink("Zaposleni", AboutView.class);
+        zaposleniLink = new RouterLink("Zaposleni", ZaposleniView.class);
         zaposleniLink.setHighlightCondition(HighlightConditions.sameLocation());
         Image zaposleniImage = new Image("img/worker.png","worker");
         zaposleniImage.getStyle().set("margin-right","10px");

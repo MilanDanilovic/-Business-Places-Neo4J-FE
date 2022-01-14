@@ -1,13 +1,11 @@
 package com.kaktus.application.feign_client.configuration;
 
 import com.kaktus.application.feign_client.FirmaFeignClient;
+import com.kaktus.application.feign_client.ZaposleniFeignClient;
 import feign.Client;
 import feign.Feign;
-import feign.Logger;
-import feign.RequestInterceptor;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
-import feign.slf4j.Slf4jLogger;
 import lombok.Data;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,6 +33,9 @@ public class FeignClientConfiguration implements ApplicationContextAware {
     public FirmaFeignClient firmaFeignClient(){
         return createClient(FirmaFeignClient.class,"firma/");
     }
+
+    @Bean
+    public ZaposleniFeignClient zaposleniFeignClient(){ return createClient(ZaposleniFeignClient.class, "zaposleni/"); }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
