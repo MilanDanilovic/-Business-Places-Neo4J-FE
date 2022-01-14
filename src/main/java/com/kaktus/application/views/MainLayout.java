@@ -1,6 +1,5 @@
 package com.kaktus.application.views;
 
-import com.kaktus.application.views.about.AboutView;
 import com.kaktus.application.views.pages.ZaposleniView;
 import com.kaktus.application.views.pregled.PregledView;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -28,7 +27,7 @@ import java.util.ArrayList;
 @PageTitle("Main")
 @CssImport("./themes/vaadin-neo4j/shared-styles.css")
 public class MainLayout extends AppLayout {
-    RouterLink vlasnikLink, firmaLink, poslovniProstorLink, kancelarijaLink, zaposleniLink;
+    RouterLink vlasnikLink, firmaLink, poslovniProstorLink, kancelarijaLink, zaposleniLink, projektiLink;
     ArrayList<RouterLink> routerLinks;
 
     public MainLayout(){
@@ -58,13 +57,6 @@ public class MainLayout extends AppLayout {
         addToNavbar(header);
     }
 
-    private void linkCreator(RouterLink routerLink,String text, Class c){
-        routerLink = new RouterLink(text,c);
-        routerLink.setHighlightCondition(HighlightConditions.sameLocation());
-        routerLink.addClassName("layout-routes");
-        routerLinks.add(routerLink);
-    }
-
     private void createDrawer() {
 
         vlasnikLink = new RouterLink("Vlasnik",PregledView.class);
@@ -87,7 +79,7 @@ public class MainLayout extends AppLayout {
         firmaLink.addClassName("layout-routes");
         routerLinks.add(firmaLink);
 
-        poslovniProstorLink = new RouterLink("Poslovni Prostor", AboutView.class);
+        poslovniProstorLink = new RouterLink("Poslovni Prostor", ZaposleniView.class);
         poslovniProstorLink.setHighlightCondition(HighlightConditions.sameLocation());
         Image poslovniProstorImage = new Image("img/office.png","office");
         poslovniProstorImage.getStyle().set("margin-right","10px");
@@ -97,7 +89,7 @@ public class MainLayout extends AppLayout {
         poslovniProstorLink.addClassName("layout-routes");
         routerLinks.add(poslovniProstorLink);
 
-        kancelarijaLink = new RouterLink("Kancelarija", AboutView.class);
+        kancelarijaLink = new RouterLink("Kancelarija", ZaposleniView.class);
         kancelarijaLink.setHighlightCondition(HighlightConditions.sameLocation());
         Image kancelarijaLinkImage = new Image("img/office-chair.png","office-chair");
         kancelarijaLinkImage.getStyle().set("margin-right","10px");
@@ -117,9 +109,19 @@ public class MainLayout extends AppLayout {
         zaposleniLink.addClassName("layout-routes");
         routerLinks.add(zaposleniLink);
 
+        projektiLink = new RouterLink("Projekti", ZaposleniView.class);
+        projektiLink.setHighlightCondition(HighlightConditions.sameLocation());
+        Image projektiImage = new Image("img/project.png","project");
+        projektiImage.getStyle().set("margin-right","10px");
+        projektiImage.setWidth("30px");
+        projektiLink.add(projektiImage);
+        projektiLink.addClassName("drawer-route-links");
+        projektiLink.addClassName("layout-routes");
+        routerLinks.add(projektiLink);
+
         routerLinks.forEach(el -> {
             el.addFocusListener(listener -> {
-                routerLinks.forEach(ch->{ch.removeClassName("main-layout-item");});
+                routerLinks.forEach(ch-> ch.removeClassName("main-layout-item"));
                 el.addClassName("main-layout-item");
             });
         });
@@ -128,7 +130,7 @@ public class MainLayout extends AppLayout {
         verticalLayout.setPadding(true);
 
         verticalLayout.setWidth("max-content");
-        verticalLayout.add(vlasnikLink, firmaLink, poslovniProstorLink, kancelarijaLink, zaposleniLink);
+        verticalLayout.add(vlasnikLink, firmaLink, poslovniProstorLink, kancelarijaLink, zaposleniLink,projektiLink);
 
         verticalLayout.setWidth("max-content");
         verticalLayout.setSizeFull();
