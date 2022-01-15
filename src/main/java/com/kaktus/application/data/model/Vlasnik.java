@@ -30,11 +30,10 @@ public class Vlasnik {
         this.poslovniProstori = poslovniProstori;
     }
 
-    /*
-        	This is a so-called wither for the id-attribute.
-            It creates a new entity and sets the field accordingly, without modifying the original entity,
-            thus making it immutable.
-     */
+    public String filterToString() {
+        return ime + " " + prezime + " "  + jmbg + " " + broj_telefona;
+    }
+
     public Vlasnik withId(Long id) {
         if (this.id.equals(id)) {
             return this;

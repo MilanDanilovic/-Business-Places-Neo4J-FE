@@ -16,6 +16,10 @@ public class Projekat {
         this.sifra_projekta = sifra_projekta;
     }
 
+    public String filterToString() {
+        return naziv + " " + sifra_projekta;
+    }
+
     public Projekat withId(Long id) {
         if (this.id.equals(id)) {
             return this;

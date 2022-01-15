@@ -31,6 +31,10 @@ public class PoslovniProstor {
 
     }
 
+    public String filterToString() {
+        return kvadratura + " " + adresa;
+    }
+
     public PoslovniProstor withId(Long id) {
         if (this.id.equals(id)) {
             return this;

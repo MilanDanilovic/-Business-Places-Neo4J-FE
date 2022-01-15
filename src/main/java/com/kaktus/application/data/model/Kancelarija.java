@@ -32,6 +32,10 @@ public class Kancelarija {
         this.status = status;
     }
 
+    public String filterToString() {
+        return broj_kancelarije + " " + kvadratura + " " + broj_radnika + " " + status;
+    }
+
     public Kancelarija withId(Long id) {
         if (this.id.equals(id)) {
             return this;

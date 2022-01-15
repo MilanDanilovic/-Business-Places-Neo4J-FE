@@ -32,6 +32,10 @@ public class Zaposleni {
 
     }
 
+    public String filterToString() {
+        return ime + " " + prezime + " " + pol + " " + jmbg + " " + kartica;
+    }
+
     public Zaposleni withId(Long id) {
         if (this.id.equals(id)) {
             return this;

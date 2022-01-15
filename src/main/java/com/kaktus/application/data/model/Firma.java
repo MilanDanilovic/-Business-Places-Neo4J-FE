@@ -31,6 +31,10 @@ public class Firma {
         this.datum_osnivanja = datum_osnivanja;
     }
 
+    public String filterToString() {
+        return naziv + " " + godisnja_zarada + " " + pib;
+    }
+
     public Firma withId(Long id) {
         if (this.id.equals(id)) {
             return this;

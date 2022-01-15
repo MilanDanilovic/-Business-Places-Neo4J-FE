@@ -3,10 +3,12 @@ package com.kaktus.application.views.pages;
 import com.kaktus.application.data.model.Zaposleni;
 import com.kaktus.application.feign_client.ZaposleniFeignClient;
 import com.kaktus.application.views.MainLayout;
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
@@ -15,14 +17,20 @@ import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.component.grid.contextmenu.GridMenuItem;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.page.Page;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import org.neo4j.ogm.cypher.query.Pagination;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.vaadin.klaudeta.PaginatedGrid;
 
@@ -44,6 +52,8 @@ public class ZaposleniView extends VerticalLayout {
 
     Label upozorenjeUpdate = new Label();
     Label upozorenjeDelete = new Label();
+    com.vaadin.flow.component.textfield.TextField nameFilter;
+    Button createEntity = new Button();
 
     private final PaginatedGrid<Zaposleni> zaposleniGrid =new PaginatedGrid<>();
     private Zaposleni zaposleniUpdate = new Zaposleni();
@@ -121,7 +131,43 @@ public class ZaposleniView extends VerticalLayout {
         gridWithSideBar.setSizeFull();
         gridWithSideBar.setFlexGrow(5);
 
+        add(createToolsTab());
         add(gridWithSideBar);
+    }
+
+    private void onFilter(HasValue.ValueChangeEvent<String> event) {
+        ListDataProvider<Zaposleni> dataProvider = (ListDataProvider<Zaposleni>) zaposleniGrid.getDataProvider();
+        dataProvider.setFilter(Zaposleni::filterToString, s -> caseInsensitiveContains(s, event.getValue()));
+    }
+
+    private Boolean caseInsensitiveContains(String where, String what) {
+        return where.toLowerCase().contains(what.toLowerCase());
+    }
+
+    private HorizontalLayout createToolsTab(){
+
+        HorizontalLayout toolBar = new HorizontalLayout();
+        nameFilter = new TextField();
+        nameFilter.focus();
+        nameFilter.setPlaceholder("Pretrazi..");
+        nameFilter.setClearButtonVisible(true);
+        nameFilter.setValueChangeMode(ValueChangeMode.LAZY);
+        nameFilter.addValueChangeListener(this::onFilter);
+
+        createEntity.addClickListener(click -> {
+            //todo
+        });
+        createEntity.setIcon(new Icon(VaadinIcon.PLUS));
+        createEntity.setText("Dodaj novog zaposlenog");
+
+        toolBar.add(nameFilter,createEntity);
+        toolBar.getStyle().set("margin-left","15px");
+        return toolBar;
+
+    }
+
+    private void refreshGrid(){
+        zaposleniGrid.setItems(zaposleniFeignClient.findAllZaposleni());
     }
 
     private Dialog dialogUpdate(String text, Zaposleni zaposleni){
@@ -140,12 +186,16 @@ public class ZaposleniView extends VerticalLayout {
                 notification.setText("Promene uspesno sacuvane!");
                 notification.setDuration(3000);
                 notification.open();
+
+                refreshGrid();
             } catch (Exception e) {
                 Notification notification = new Notification("Greska prilikom cuvanja!", 3000);
                 notification.setPosition(Notification.Position.MIDDLE);
                 notification.open();
             }
         });
+
+        potvrdiButton.getStyle().set("margin-right","10px");
 
         Button odustaniButton = new Button("Ne", event -> {
             dialog.close();
@@ -175,12 +225,16 @@ public class ZaposleniView extends VerticalLayout {
                 notification.setText("Uspesno obrisan zaposleni!");
                 notification.setDuration(3000);
                 notification.open();
+
+                refreshGrid();
             } catch (Exception e) {
                 Notification notification = new Notification("Greska prilikom brisanja!", 3000);
                 notification.setPosition(Notification.Position.MIDDLE);
                 notification.open();
             }
         });
+
+        potvrdiButton.getStyle().set("margin-right","10px");
 
         Button odustaniButton = new Button("Ne", event -> {
             dialog.close();
@@ -204,6 +258,8 @@ public class ZaposleniView extends VerticalLayout {
         sacuvajButton.addClassName("form-buttons");
         obrisiButton.addClassName("form-buttons");
         odustaniButton.addClassName("form-buttons");
+
+        sacuvajButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         odustaniButton.setIcon(VaadinIcon.CLOSE.create());
 
@@ -247,6 +303,8 @@ public class ZaposleniView extends VerticalLayout {
             dialog.open();
 
         });
+
+        sacuvajButton.getStyle().set("margin-right","10px");
 
         obrisiButton.addClickListener(click -> {
             Zaposleni zaposleniDel= new Zaposleni();
