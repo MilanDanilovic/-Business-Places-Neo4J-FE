@@ -41,3 +41,8 @@ vaadin-vertical-layout .layout-routes:hover{
 .form-buttons{
     width: 150px;
 }
+
+.main-layout-item{
+    background-color: rgba(22,118,243, 0.2);
+    border-radius:5px;
+}

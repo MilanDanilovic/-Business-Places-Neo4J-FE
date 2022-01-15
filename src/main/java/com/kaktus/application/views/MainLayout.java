@@ -11,6 +11,7 @@ import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.HighlightCondition;
 import com.vaadin.flow.router.HighlightConditions;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouterLink;
@@ -66,6 +67,14 @@ public class MainLayout extends AppLayout {
         div.getElement().getStyle().set("align-items","center");
 
         addToNavbar(header);
+    }
+
+    private HighlightCondition<RouterLink> buildHighLightConditionFor(Class<?> linkTargetClass) {
+        return (link, afterNavigationEvent) -> {
+            return afterNavigationEvent.getActiveChain()
+                    .stream()
+                    .anyMatch(element -> element.getClass() == linkTargetClass);
+        };
     }
 
     public void createLinks( RouterLink routerLink,String imageSource, String imageAlt){

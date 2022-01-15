@@ -34,8 +34,9 @@ public class Firma {
     public Firma() {
 
     }
-
-    public Firma withId(Long id) {
+public String filterToString() {
+        return naziv + " " + godisnja_zarada + " " + pib;
+    }    public Firma withId(Long id) {
         if (this.id.equals(id)) {
             return this;
         } else {
