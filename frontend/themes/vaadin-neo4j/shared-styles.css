@@ -29,3 +29,15 @@ vaadin-vertical-layout .layout-routes:hover{
     justify-content: flex-end;
     align-items: baseline;
 }
+
+.hidden{
+    display:none!important;
+}
+
+.mw-30{
+    min-width:30em;
+}
+
+.form-buttons{
+    width: 150px;
+}
