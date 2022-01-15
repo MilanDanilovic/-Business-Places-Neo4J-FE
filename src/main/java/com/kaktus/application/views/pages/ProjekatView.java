@@ -7,6 +7,7 @@ import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
@@ -39,8 +40,7 @@ public class ProjekatView extends VerticalLayout {
 
     Label upozorenjeUpdate = new Label();
     Label upozorenjeDelete = new Label();
-    com.vaadin.flow.component.textfield.TextField nameFilter;
-    Button createEntity = new Button();
+
 
     private final PaginatedGrid<Projekat> projekatGrid =new PaginatedGrid<>();
     private Projekat projekatUpdate = new Projekat();
@@ -101,7 +101,6 @@ public class ProjekatView extends VerticalLayout {
         gridWithSideBar.setSizeFull();
         gridWithSideBar.setFlexGrow(5);
 
-        add(createToolsTab());
         add(gridWithSideBar);
     }
 
@@ -114,27 +113,6 @@ public class ProjekatView extends VerticalLayout {
         return where.toLowerCase().contains(what.toLowerCase());
     }
 
-    private HorizontalLayout createToolsTab(){
-
-        HorizontalLayout toolBar = new HorizontalLayout();
-        nameFilter = new TextField();
-        nameFilter.focus();
-        nameFilter.setPlaceholder("Pretrazi..");
-        nameFilter.setClearButtonVisible(true);
-        nameFilter.setValueChangeMode(ValueChangeMode.LAZY);
-        nameFilter.addValueChangeListener(this::onFilter);
-
-        createEntity.addClickListener(click -> {
-            //todo
-        });
-        createEntity.setIcon(new Icon(VaadinIcon.PLUS));
-        createEntity.setText("Dodaj novi projekat");
-
-        toolBar.add(nameFilter,createEntity);
-        toolBar.getStyle().set("margin-left","15px");
-        return toolBar;
-
-    }
 
     private void refreshGrid(){
         projekatGrid.setItems(projektiFeignClient.findAllProjekat());
@@ -226,7 +204,10 @@ public class ProjekatView extends VerticalLayout {
         obrisiButton.addClassName("form-buttons");
         odustaniButton.addClassName("form-buttons");
 
+        sacuvajButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
         odustaniButton.setIcon(VaadinIcon.CLOSE.create());
+
 
         nazivProjekat.setReadOnly(false);
         sifraProjekat.setReadOnly(false);

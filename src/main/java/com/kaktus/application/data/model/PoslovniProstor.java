@@ -16,15 +16,17 @@ public class PoslovniProstor {
     private Long id;
     private Double kvadratura;
     private String adresa;
+    private Long idVlasnika;
 
     @Relationship(type = "Sadrzi" , direction = Relationship.Direction.OUTGOING)
     private List<Kancelarija> kancelarije;
 
-    public PoslovniProstor(Double kvadratura, String adresa, List<Kancelarija> kancelarije) {
+    public PoslovniProstor(Double kvadratura, String adresa, List<Kancelarija> kancelarije,Long idVlasnika) {
         this.id = null;
         this.kvadratura = kvadratura;
         this.adresa = adresa;
         this.kancelarije = kancelarije;
+        this.idVlasnika = idVlasnika;
     }
 
     public PoslovniProstor() {
@@ -39,7 +41,7 @@ public class PoslovniProstor {
         if (this.id.equals(id)) {
             return this;
         } else {
-            PoslovniProstor newObject = new PoslovniProstor(this.kvadratura, this.adresa, this.kancelarije);
+            PoslovniProstor newObject = new PoslovniProstor(this.kvadratura, this.adresa, this.kancelarije,this.idVlasnika);
             newObject.id = id;
             return newObject;
         }

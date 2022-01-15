@@ -1,12 +1,20 @@
 package com.kaktus.application.views.pages;
 
+import com.kaktus.application.data.model.Firma;
 import com.kaktus.application.data.model.PoslovniProstor;
+import com.kaktus.application.data.model.Vlasnik;
+import com.kaktus.application.data.model.Zaposleni;
 import com.kaktus.application.feign_client.PoslovniProstorFeignClient;
+import com.kaktus.application.feign_client.VlasnikFeignClient;
 import com.kaktus.application.views.MainLayout;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
@@ -28,6 +36,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.vaadin.klaudeta.PaginatedGrid;
 
 import javax.annotation.PostConstruct;
+import java.time.format.DateTimeFormatter;
 
 @EnableFeignClients
 @Route(value="prostor", layout = MainLayout.class)
@@ -47,9 +56,11 @@ public class PoslovniProstorView extends VerticalLayout {
     private PoslovniProstor prostorDelete = new PoslovniProstor();
 
     private final PoslovniProstorFeignClient poslovniProstorFeignClient;
+    private final VlasnikFeignClient vlasnikFeignClient;
 
-    public PoslovniProstorView(PoslovniProstorFeignClient poslovniProstorFeignClient) {
+    public PoslovniProstorView(PoslovniProstorFeignClient poslovniProstorFeignClient, VlasnikFeignClient vlasnikFeignClient) {
         this.poslovniProstorFeignClient = poslovniProstorFeignClient;
+        this.vlasnikFeignClient = vlasnikFeignClient;
     }
 
     @PostConstruct
@@ -114,6 +125,104 @@ public class PoslovniProstorView extends VerticalLayout {
         return where.toLowerCase().contains(what.toLowerCase());
     }
 
+    private Dialog dialogCreate(String text,Long jmbg, String datum, PoslovniProstor poslovniProstor ){
+        Dialog dialog = new Dialog();
+        dialog.add(new Text(text));
+        dialog.setCloseOnEsc(true);
+        dialog.setCloseOnOutsideClick(true);
+
+        Button potvrdiButton = new Button("Da", event -> {
+            dialog.close();
+            try {
+                poslovniProstorFeignClient.addPoslovniProstor(jmbg,datum,poslovniProstor);
+                Notification notification = new Notification();
+                notification.setPosition(Notification.Position.MIDDLE);
+                notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                notification.setText("Promene uspesno sacuvane!");
+                notification.setDuration(3000);
+                notification.open();
+
+                refreshGrid();
+                dialog.close();
+                UI.getCurrent().getPage().reload();
+            } catch (Exception e) {
+                Notification notification = new Notification("Greska prilikom cuvanja!", 3000);
+                notification.setPosition(Notification.Position.MIDDLE);
+                notification.open();
+            }
+        });
+
+        potvrdiButton.getStyle().set("margin-right","10px");
+
+        Button odustaniButton = new Button("Ne", event -> {
+            dialog.close();
+        });
+
+        potvrdiButton.addClickShortcut(Key.ENTER);
+        potvrdiButton.addClassName("m-5");
+        odustaniButton.addClassName("m-5");
+
+        dialog.add(new Div( potvrdiButton, odustaniButton));
+        return dialog;
+    }
+
+    private void addPoslovniProstorToDatabase(){
+        Dialog createPoslovniProstorDialog = new Dialog();
+        createPoslovniProstorDialog.open();
+
+        Button save = new Button("Sacuvaj");
+        Button odustani = new Button("Odustani");
+
+        save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        save.setIcon(VaadinIcon.CHECK.create());
+        odustani.setIcon(VaadinIcon.CLOSE.create());
+
+
+        TextField kvadratura = new TextField("Kvadratura");
+        TextField adresa = new TextField("Adresa");
+        DatePicker datum_kupovine = new DatePicker("Datum kupovine");
+
+
+        ComboBox<Vlasnik> vlasnik = new ComboBox<>("Vlasnik");
+        vlasnik.setItems(vlasnikFeignClient.findAllVlasnik());
+        vlasnik.setItemLabelGenerator(Vlasnik::getIme);
+
+        save.addClickListener(click->{
+            PoslovniProstor poslovniProstor = new PoslovniProstor();
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.YYYY");
+
+            poslovniProstor.setIdVlasnika(vlasnik.getValue().getId());
+            poslovniProstor.setAdresa(adresa.getValue());
+            poslovniProstor.setKvadratura(Double.valueOf(kvadratura.getValue()));
+
+            Dialog dialog = dialogCreate(upozorenjeUpdate.getText(),vlasnik.getValue().getJmbg() ,formatter.format(datum_kupovine.getValue()),poslovniProstor);
+            dialog.open();
+
+        });
+
+        odustani.addClickListener(click->{
+            createPoslovniProstorDialog.close();
+            UI.getCurrent().getPage().reload();
+        });
+
+        FormLayout formLayout = new FormLayout();
+        formLayout.add(kvadratura, adresa, datum_kupovine, vlasnik);
+
+        FormLayout formLayoutControls = new FormLayout();
+        formLayoutControls.add(
+                save, odustani
+        );
+        formLayout.setResponsiveSteps(
+                new FormLayout.ResponsiveStep("0", 1),
+                new FormLayout.ResponsiveStep("320", 2),
+                new FormLayout.ResponsiveStep("400px", 3),
+                new FormLayout.ResponsiveStep("500px", 4)
+        );
+
+        createPoslovniProstorDialog.add( formLayout,formLayoutControls);
+    }
+
     private HorizontalLayout createToolsTab(){
 
         HorizontalLayout toolBar = new HorizontalLayout();
@@ -125,7 +234,7 @@ public class PoslovniProstorView extends VerticalLayout {
         nameFilter.addValueChangeListener(this::onFilter);
 
         createEntity.addClickListener(click -> {
-            //todo
+            addPoslovniProstorToDatabase();
         });
         createEntity.setIcon(new Icon(VaadinIcon.PLUS));
         createEntity.setText("Dodaj novi poslovni prostor");
@@ -165,6 +274,8 @@ public class PoslovniProstorView extends VerticalLayout {
             }
         });
 
+        potvrdiButton.getStyle().set("margin-right","10px");
+
         Button odustaniButton = new Button("Ne", event -> {
             dialog.close();
         });
@@ -202,6 +313,8 @@ public class PoslovniProstorView extends VerticalLayout {
             }
         });
 
+        potvrdiButton.getStyle().set("margin-right","10px");
+
         Button odustaniButton = new Button("Ne", event -> {
             dialog.close();
         });
@@ -224,6 +337,8 @@ public class PoslovniProstorView extends VerticalLayout {
         sacuvajButton.addClassName("form-buttons");
         obrisiButton.addClassName("form-buttons");
         odustaniButton.addClassName("form-buttons");
+
+        sacuvajButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         odustaniButton.setIcon(VaadinIcon.CLOSE.create());
 
