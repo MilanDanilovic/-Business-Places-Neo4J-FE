@@ -45,13 +45,11 @@ public class VlasnikView extends VerticalLayout {
     TextField brojTelefonaVlasnik = new TextField();
 
     Label upozorenjeUpdate = new Label();
-    Label upozorenjeDelete = new Label();
     com.vaadin.flow.component.textfield.TextField nameFilter;
     Button createEntity = new Button();
 
     private final PaginatedGrid<Vlasnik> vlasnikGrid =new PaginatedGrid<>();
     private Vlasnik vlasnikUpdate = new Vlasnik();
-    private Vlasnik vlasnikDelete = new Vlasnik();
 
     private final VlasnikFeignClient vlasnikFeignClient;
 
@@ -88,7 +86,6 @@ public class VlasnikView extends VerticalLayout {
                 Vlasnik vlasnikPostojeci = click.getFirstSelectedItem().get();
 
                 vlasnikUpdate.setId(vlasnikPostojeci.getId());
-                vlasnikDelete.setId(vlasnikPostojeci.getId());
 
                 if(vlasnikPostojeci.getIme() != null) {
                     imeVlasnik.setValue(vlasnikPostojeci.getIme());
@@ -242,11 +239,9 @@ public class VlasnikView extends VerticalLayout {
         Div sideBarTmp = new Div();
 
         Button sacuvajButton = new Button("Sacuvaj");
-        Button obrisiButton = new Button("Obrisi");
         Button odustaniButton = new Button("Odustani");
 
         sacuvajButton.addClassName("form-buttons");
-        obrisiButton.addClassName("form-buttons");
         odustaniButton.addClassName("form-buttons");
 
         sacuvajButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -270,7 +265,7 @@ public class VlasnikView extends VerticalLayout {
                 new FormLayout.ResponsiveStep("500px", 2)
         );
 
-        HorizontalLayout buttonsWrap = new HorizontalLayout(sacuvajButton, obrisiButton, odustaniButton);
+        HorizontalLayout buttonsWrap = new HorizontalLayout(sacuvajButton, odustaniButton);
         buttonsWrap.getStyle().set("justify-content","center");
 
         sideBarTmp.add(formLayoutSideBar, buttonsWrap);
@@ -293,14 +288,6 @@ public class VlasnikView extends VerticalLayout {
 
         sacuvajButton.getStyle().set("margin-right","10px");
 
-        obrisiButton.addClickListener(click -> {
-            Vlasnik vlasnikDel= new Vlasnik();
-            vlasnikDel.setId(vlasnikDelete.getId());
-
-            Dialog dialog = dialogDelete(upozorenjeDelete.getText(), vlasnikDel);
-            dialog.open();
-        });
-
         odustaniButton.addClickListener(click->{
             sideBarTmp.addClassName("hidden");
         });
@@ -315,6 +302,5 @@ public class VlasnikView extends VerticalLayout {
         jmbgVlasnik.setLabel("Jmbg");
         brojTelefonaVlasnik.setLabel("Broj telefona");
         upozorenjeUpdate.setText("Da li ste sigurni da zelite da izmenite podatke?");
-        upozorenjeDelete.setText("Da li ste sigurni da zelite da obrisete vlasnika?");
     }
 }
