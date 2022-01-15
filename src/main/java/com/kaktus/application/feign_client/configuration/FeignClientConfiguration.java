@@ -1,7 +1,6 @@
 package com.kaktus.application.feign_client.configuration;
 
-import com.kaktus.application.feign_client.FirmaFeignClient;
-import com.kaktus.application.feign_client.ZaposleniFeignClient;
+import com.kaktus.application.feign_client.*;
 import feign.Client;
 import feign.Feign;
 import feign.codec.Decoder;
@@ -36,6 +35,18 @@ public class FeignClientConfiguration implements ApplicationContextAware {
 
     @Bean
     public ZaposleniFeignClient zaposleniFeignClient(){ return createClient(ZaposleniFeignClient.class, "zaposleni/"); }
+
+    @Bean
+    public VlasnikFeignClient vlasnikFeignClient(){ return createClient(VlasnikFeignClient.class,"vlasnik/");}
+
+    @Bean
+    public KancelarijaFeignClient kancelarijaFeignClient(){ return createClient(KancelarijaFeignClient.class, "kancelarija/");}
+
+    @Bean
+    public PoslovniProstorFeignClient poslovniProstorFeignClient(){ return createClient(PoslovniProstorFeignClient.class,"prostor/");}
+
+    @Bean
+    public ProjektiFeignClient projektiFeignClient(){ return createClient(ProjektiFeignClient.class,"projekat/");}
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
