@@ -1,8 +1,10 @@
 package com.kaktus.application.data.model;
 
+import lombok.Data;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
 
+@Data
 public class Projekat {
     @Id
     @GeneratedValue
@@ -16,10 +18,13 @@ public class Projekat {
         this.sifra_projekta = sifra_projekta;
     }
 
+    public Projekat() {
+
+    }
+
     public String filterToString() {
         return naziv + " " + sifra_projekta;
     }
-
     public Projekat withId(Long id) {
         if (this.id.equals(id)) {
             return this;
