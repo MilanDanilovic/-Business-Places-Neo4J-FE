@@ -1,9 +1,9 @@
 package com.kaktus.application.views.pages;
 
 import com.kaktus.application.data.model.PoslovniProstor;
-import com.kaktus.application.data.model.Zaposleni;
 import com.kaktus.application.feign_client.PoslovniProstorFeignClient;
 import com.kaktus.application.views.MainLayout;
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
@@ -13,12 +13,15 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.springframework.cloud.openfeign.EnableFeignClients;
@@ -30,14 +33,14 @@ import javax.annotation.PostConstruct;
 @Route(value="prostor", layout = MainLayout.class)
 @PageTitle("Prostor")
 public class PoslovniProstorView extends VerticalLayout {
-    /*private Long id;
-    private Double kvadratura;
-    private String adresa;*/
+
     TextField kvadraturaProstor = new TextField();
     TextField adresaProstor = new TextField();
 
     Label upozorenjeUpdate = new Label();
     Label upozorenjeDelete = new Label();
+    com.vaadin.flow.component.textfield.TextField nameFilter;
+    Button createEntity = new Button();
 
     private final PaginatedGrid<PoslovniProstor> poslovniProstorGrid =new PaginatedGrid<>();
     private PoslovniProstor prostorUpdate = new PoslovniProstor();
@@ -98,7 +101,43 @@ public class PoslovniProstorView extends VerticalLayout {
         gridWithSideBar.setSizeFull();
         gridWithSideBar.setFlexGrow(5);
 
+        add(createToolsTab());
         add(gridWithSideBar);
+    }
+
+    private void onFilter(HasValue.ValueChangeEvent<String> event) {
+        ListDataProvider<PoslovniProstor> dataProvider = (ListDataProvider<PoslovniProstor>) poslovniProstorGrid.getDataProvider();
+        dataProvider.setFilter(PoslovniProstor::filterToString, s -> caseInsensitiveContains(s, event.getValue()));
+    }
+
+    private Boolean caseInsensitiveContains(String where, String what) {
+        return where.toLowerCase().contains(what.toLowerCase());
+    }
+
+    private HorizontalLayout createToolsTab(){
+
+        HorizontalLayout toolBar = new HorizontalLayout();
+        nameFilter = new TextField();
+        nameFilter.focus();
+        nameFilter.setPlaceholder("Pretrazi..");
+        nameFilter.setClearButtonVisible(true);
+        nameFilter.setValueChangeMode(ValueChangeMode.LAZY);
+        nameFilter.addValueChangeListener(this::onFilter);
+
+        createEntity.addClickListener(click -> {
+            //todo
+        });
+        createEntity.setIcon(new Icon(VaadinIcon.PLUS));
+        createEntity.setText("Dodaj novi poslovni prostor");
+
+        toolBar.add(nameFilter,createEntity);
+        toolBar.getStyle().set("margin-left","15px");
+        return toolBar;
+
+    }
+
+    private void refreshGrid(){
+        poslovniProstorGrid.setItems(poslovniProstorFeignClient.findAllPoslovniProstor());
     }
 
     private Dialog dialogUpdate(String text, PoslovniProstor poslovniProstor){
@@ -117,6 +156,8 @@ public class PoslovniProstorView extends VerticalLayout {
                 notification.setText("Promene uspesno sacuvane!");
                 notification.setDuration(3000);
                 notification.open();
+
+                refreshGrid();
             } catch (Exception e) {
                 Notification notification = new Notification("Greska prilikom cuvanja!", 3000);
                 notification.setPosition(Notification.Position.MIDDLE);
@@ -152,6 +193,8 @@ public class PoslovniProstorView extends VerticalLayout {
                 notification.setText("Uspesno obrisan poslovni prostor!");
                 notification.setDuration(3000);
                 notification.open();
+
+                refreshGrid();
             } catch (Exception e) {
                 Notification notification = new Notification("Greska prilikom brisanja!", 3000);
                 notification.setPosition(Notification.Position.MIDDLE);

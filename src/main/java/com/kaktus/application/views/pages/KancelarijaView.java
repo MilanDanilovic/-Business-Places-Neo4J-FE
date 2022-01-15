@@ -1,9 +1,11 @@
 package com.kaktus.application.views.pages;
 
 import com.kaktus.application.data.model.Kancelarija;
+import com.kaktus.application.data.model.Projekat;
 import com.kaktus.application.data.model.Zaposleni;
 import com.kaktus.application.feign_client.KancelarijaFeignClient;
 import com.kaktus.application.views.MainLayout;
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
@@ -13,12 +15,15 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.springframework.cloud.openfeign.EnableFeignClients;
@@ -38,6 +43,8 @@ public class KancelarijaView extends VerticalLayout {
 
     Label upozorenjeUpdate = new Label();
     Label upozorenjeDelete = new Label();
+    com.vaadin.flow.component.textfield.TextField nameFilter;
+    Button createEntity = new Button();
 
     private final PaginatedGrid<Kancelarija> kancelarijaGrid =new PaginatedGrid<>();
     private Kancelarija kancelarijaUpdate = new Kancelarija();
@@ -107,7 +114,43 @@ public class KancelarijaView extends VerticalLayout {
         gridWithSideBar.setSizeFull();
         gridWithSideBar.setFlexGrow(5);
 
+        add(createToolsTab());
         add(gridWithSideBar);
+    }
+
+    private void onFilter(HasValue.ValueChangeEvent<String> event) {
+        ListDataProvider<Kancelarija> dataProvider = (ListDataProvider< Kancelarija>) kancelarijaGrid.getDataProvider();
+        dataProvider.setFilter(Kancelarija::filterToString, s -> caseInsensitiveContains(s, event.getValue()));
+    }
+
+    private Boolean caseInsensitiveContains(String where, String what) {
+        return where.toLowerCase().contains(what.toLowerCase());
+    }
+
+    private HorizontalLayout createToolsTab(){
+
+        HorizontalLayout toolBar = new HorizontalLayout();
+        nameFilter = new TextField();
+        nameFilter.focus();
+        nameFilter.setPlaceholder("Pretrazi..");
+        nameFilter.setClearButtonVisible(true);
+        nameFilter.setValueChangeMode(ValueChangeMode.LAZY);
+        nameFilter.addValueChangeListener(this::onFilter);
+
+        createEntity.addClickListener(click -> {
+            //todo
+        });
+        createEntity.setIcon(new Icon(VaadinIcon.PLUS));
+        createEntity.setText("Dodaj novu kancelariju");
+
+        toolBar.add(nameFilter,createEntity);
+        toolBar.getStyle().set("margin-left","15px");
+        return toolBar;
+
+    }
+
+    private void refreshGrid(){
+        kancelarijaGrid.setItems(kancelarijaFeignClient.findAllKancelarija());
     }
 
     private Dialog dialogUpdate(String text, Kancelarija kancelarija){
@@ -126,6 +169,8 @@ public class KancelarijaView extends VerticalLayout {
                 notification.setText("Promene uspesno sacuvane!");
                 notification.setDuration(3000);
                 notification.open();
+
+                refreshGrid();
             } catch (Exception e) {
                 Notification notification = new Notification("Greska prilikom cuvanja!", 3000);
                 notification.setPosition(Notification.Position.MIDDLE);
@@ -161,6 +206,8 @@ public class KancelarijaView extends VerticalLayout {
                 notification.setText("Uspesno obrisana kancelarija!");
                 notification.setDuration(3000);
                 notification.open();
+
+                refreshGrid();
             } catch (Exception e) {
                 Notification notification = new Notification("Greska prilikom brisanja!", 3000);
                 notification.setPosition(Notification.Position.MIDDLE);
