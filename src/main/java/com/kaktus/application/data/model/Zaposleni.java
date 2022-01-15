@@ -28,6 +28,10 @@ public class Zaposleni {
         this.kartica = kartica;
     }
 
+    public Zaposleni() {
+
+    }
+
     public Zaposleni withId(Long id) {
         if (this.id.equals(id)) {
             return this;
