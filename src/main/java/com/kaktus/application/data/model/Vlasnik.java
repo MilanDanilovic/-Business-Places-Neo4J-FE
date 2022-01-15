@@ -30,6 +30,10 @@ public class Vlasnik {
         this.poslovniProstori = poslovniProstori;
     }
 
+    public Vlasnik() {
+
+    }
+
     public String filterToString() {
         return ime + " " + prezime + " "  + jmbg + " " + broj_telefona;
     }
