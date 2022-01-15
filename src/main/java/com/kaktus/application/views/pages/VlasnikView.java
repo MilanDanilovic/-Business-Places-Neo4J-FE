@@ -26,6 +26,7 @@ import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteAlias;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.vaadin.klaudeta.PaginatedGrid;
 
@@ -33,6 +34,7 @@ import javax.annotation.PostConstruct;
 
 @EnableFeignClients
 @Route(value="vlasnik", layout = MainLayout.class)
+@RouteAlias(value = "", layout = MainLayout.class)
 @PageTitle("Vlasnik")
 public class VlasnikView extends VerticalLayout {
 
