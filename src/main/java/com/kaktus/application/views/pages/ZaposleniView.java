@@ -8,6 +8,7 @@ import com.kaktus.application.views.MainLayout;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -185,10 +186,16 @@ public class ZaposleniView extends VerticalLayout {
             zaposleni.setDatum_rodjenja(formatter.format(datum_rodjenja.getValue()));
             zaposleni.setJmbg(Long.parseLong(jmbg.getValue()));
             zaposleni.setPol(polIzbor.getValue());
+            zaposleni.setIdFirme(firme.getValue().getId());
 
             Dialog dialog = dialogCreate(upozorenjeUpdate.getText(), zaposleni, formatter.format(datum_od.getValue()), formatter.format(datum_do.getValue()), pozicija.getValue(), firme.getValue().getPib());
             dialog.open();
 
+        });
+
+        odustani.addClickListener(click->{
+            createZaposleniDialog.close();
+            UI.getCurrent().getPage().reload();
         });
 
         FormLayout formLayout = new FormLayout();
@@ -293,6 +300,7 @@ public class ZaposleniView extends VerticalLayout {
                 refreshGrid();
                 dialog.close();
                 createZaposleniDialog.close();
+                UI.getCurrent().getPage().reload();
             } catch (Exception e) {
                 Notification notification = new Notification("Greska prilikom cuvanja!", 3000);
                 notification.setPosition(Notification.Position.MIDDLE);
