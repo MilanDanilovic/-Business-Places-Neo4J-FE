@@ -47,7 +47,6 @@ public class VlasnikView extends VerticalLayout {
     Label upozorenjeUpdate = new Label();
     Label upozorenjeDelete = new Label();
     com.vaadin.flow.component.textfield.TextField nameFilter;
-    Button createEntity = new Button();
 
     private final PaginatedGrid<Vlasnik> vlasnikGrid =new PaginatedGrid<>();
     private Vlasnik vlasnikUpdate = new Vlasnik();
@@ -121,7 +120,6 @@ public class VlasnikView extends VerticalLayout {
         gridWithSideBar.setSizeFull();
         gridWithSideBar.setFlexGrow(5);
 
-        add(createToolsTab());
         add(gridWithSideBar);
     }
 
@@ -134,27 +132,7 @@ public class VlasnikView extends VerticalLayout {
         return where.toLowerCase().contains(what.toLowerCase());
     }
 
-    private HorizontalLayout createToolsTab(){
 
-        HorizontalLayout toolBar = new HorizontalLayout();
-        nameFilter = new TextField();
-        nameFilter.focus();
-        nameFilter.setPlaceholder("Pretrazi..");
-        nameFilter.setClearButtonVisible(true);
-        nameFilter.setValueChangeMode(ValueChangeMode.LAZY);
-        nameFilter.addValueChangeListener(this::onFilter);
-
-        createEntity.addClickListener(click -> {
-            //todo
-        });
-        createEntity.setIcon(new Icon(VaadinIcon.PLUS));
-        createEntity.setText("Dodaj novog vlasnika");
-
-        toolBar.add(nameFilter,createEntity);
-        toolBar.getStyle().set("margin-left","15px");
-        return toolBar;
-
-    }
 
     private void refreshGrid(){
         vlasnikGrid.setItems(vlasnikFeignClient.findAllVlasnik());
