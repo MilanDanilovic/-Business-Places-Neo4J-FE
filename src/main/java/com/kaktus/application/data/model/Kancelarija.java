@@ -32,6 +32,8 @@ public class Kancelarija {
         this.status = status;
     }
 
+    public String brojKancelarije() { return broj_kancelarije.toString(); }
+
     public String filterToString() {
         return broj_kancelarije + " " + kvadratura + " " + broj_radnika + " " + status;
     }

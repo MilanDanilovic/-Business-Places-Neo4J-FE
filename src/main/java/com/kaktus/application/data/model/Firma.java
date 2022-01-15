@@ -18,17 +18,19 @@ public class Firma {
     private Double godisnja_zarada;
     private Long pib;
     private String datum_osnivanja;
+    private Long idKancelarije;
 
     @Relationship(type = "Rade" , direction = Relationship.Direction.OUTGOING)
     private List<Zaposleni> zaposleni;
 
-    public Firma(String naziv, Double godisnja_zarada, Long pib, List<Zaposleni> zaposleni, String datum_osnivanja) {
+    public Firma(String naziv, Double godisnja_zarada, Long pib, List<Zaposleni> zaposleni, String datum_osnivanja,Long idKancelarije) {
         this.id = null;
         this.naziv = naziv;
         this.godisnja_zarada = godisnja_zarada;
         this.pib = pib;
         this.zaposleni = zaposleni;
         this.datum_osnivanja = datum_osnivanja;
+        this.idKancelarije = idKancelarije;
     }
 
     public Firma() {
@@ -40,7 +42,7 @@ public String filterToString() {
         if (this.id.equals(id)) {
             return this;
         } else {
-            Firma newObject = new Firma(this.naziv, this.godisnja_zarada, this.pib, this.zaposleni, this.datum_osnivanja);
+            Firma newObject = new Firma(this.naziv, this.godisnja_zarada, this.pib, this.zaposleni, this.datum_osnivanja, this.idKancelarije);
             newObject.id = id;
             return newObject;
         }
