@@ -1,5 +1,6 @@
 package com.kaktus.application.views;
 
+import com.kaktus.application.views.pages.ProjekatView;
 import com.kaktus.application.views.pages.ZaposleniView;
 import com.kaktus.application.views.pregled.PregledView;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -40,7 +41,7 @@ public class MainLayout extends AppLayout {
         poslovniProstorLink = new RouterLink("Poslovni Prostor", ZaposleniView.class);
         kancelarijaLink = new RouterLink("Kancelarija", ZaposleniView.class);
         zaposleniLink = new RouterLink("Zaposleni", ZaposleniView.class);
-        projektiLink = new RouterLink("Projekti", ZaposleniView.class);
+        projektiLink = new RouterLink("Projekti", ProjekatView.class);
 
         createHeader();
         createDrawer();

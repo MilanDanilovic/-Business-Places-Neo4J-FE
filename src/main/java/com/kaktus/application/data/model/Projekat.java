@@ -1,8 +1,10 @@
 package com.kaktus.application.data.model;
 
+import lombok.Data;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
 
+@Data
 public class Projekat {
     @Id
     @GeneratedValue
@@ -14,6 +16,10 @@ public class Projekat {
         this.id = null;
         this.naziv = naziv;
         this.sifra_projekta = sifra_projekta;
+    }
+
+    public Projekat() {
+
     }
 
     public Projekat withId(Long id) {
