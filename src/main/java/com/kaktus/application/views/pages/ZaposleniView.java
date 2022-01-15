@@ -56,7 +56,7 @@ public class ZaposleniView extends VerticalLayout {
     private final PaginatedGrid<Zaposleni> zaposleniGrid =new PaginatedGrid<>();
     private Zaposleni zaposleniUpdate = new Zaposleni();
     private Zaposleni zaposleniDelete = new Zaposleni();
-    Dialog createZaposleniDialog = new Dialog();
+
 
     private final ZaposleniFeignClient zaposleniFeignClient;
     private final FirmaFeignClient firmaFeignClient;
@@ -146,7 +146,7 @@ public class ZaposleniView extends VerticalLayout {
     }
 
     private void addZaposleniToDatabase(){
-
+        Dialog createZaposleniDialog = new Dialog();
         createZaposleniDialog.open();
 
         Button save = new Button("Sacuvaj");
@@ -173,8 +173,8 @@ public class ZaposleniView extends VerticalLayout {
         ComboBox<String>  polIzbor = new ComboBox<>("Pol");
         polIzbor.setItems("muski","zenski");
 
-        ComboBox<String>  kartica = new ComboBox<>("Kartica");
-        kartica.setItems("0","1");
+        ComboBox<Long>  kartica = new ComboBox<>("Kartica");
+        kartica.setItems(0L,1L);
 
         save.addClickListener(click->{
             Zaposleni zaposleni = new Zaposleni();
@@ -187,6 +187,7 @@ public class ZaposleniView extends VerticalLayout {
             zaposleni.setJmbg(Long.parseLong(jmbg.getValue()));
             zaposleni.setPol(polIzbor.getValue());
             zaposleni.setIdFirme(firme.getValue().getId());
+            zaposleni.setKartica(kartica.getValue());
 
             Dialog dialog = dialogCreate(upozorenjeUpdate.getText(), zaposleni, formatter.format(datum_od.getValue()), formatter.format(datum_do.getValue()), pozicija.getValue(), firme.getValue().getPib());
             dialog.open();
@@ -299,7 +300,6 @@ public class ZaposleniView extends VerticalLayout {
 
                 refreshGrid();
                 dialog.close();
-                createZaposleniDialog.close();
                 UI.getCurrent().getPage().reload();
             } catch (Exception e) {
                 Notification notification = new Notification("Greska prilikom cuvanja!", 3000);

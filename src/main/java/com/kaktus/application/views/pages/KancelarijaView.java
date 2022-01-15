@@ -53,7 +53,7 @@ public class KancelarijaView extends VerticalLayout {
     private final PaginatedGrid<Kancelarija> kancelarijaGrid =new PaginatedGrid<>();
     private Kancelarija kancelarijaUpdate = new Kancelarija();
     private Kancelarija kancelarijaDelete = new Kancelarija();
-    Dialog createKancelarijaDialog = new Dialog();
+
 
     private final KancelarijaFeignClient kancelarijaFeignClient;
     private final PoslovniProstorFeignClient poslovniProstorFeignClient;
@@ -153,7 +153,6 @@ public class KancelarijaView extends VerticalLayout {
 
                 refreshGrid();
                 dialog.close();
-                createKancelarijaDialog.close();
                 UI.getCurrent().getPage().reload();
             } catch (Exception e) {
                 Notification notification = new Notification("Greska prilikom cuvanja!", 3000);
@@ -177,6 +176,7 @@ public class KancelarijaView extends VerticalLayout {
     }
 
     private void addKancelarijaToDatabase(){
+        Dialog createKancelarijaDialog = new Dialog();
         createKancelarijaDialog.open();
 
         Button save = new Button("Sacuvaj");
