@@ -1,9 +1,6 @@
 package com.kaktus.application.views;
 
-import com.kaktus.application.views.pages.KancelarijaView;
-import com.kaktus.application.views.pages.PoslovniProstorView;
-import com.kaktus.application.views.pages.ProjekatView;
-import com.kaktus.application.views.pages.ZaposleniView;
+import com.kaktus.application.views.pages.*;
 import com.kaktus.application.views.pregled.PregledView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
@@ -39,7 +36,7 @@ public class MainLayout extends AppLayout {
         routerLinks = new ArrayList<>();
 
         vlasnikLink = new RouterLink("Vlasnik",PregledView.class);
-        firmaLink = new RouterLink("Firma", PregledView.class);
+        firmaLink = new RouterLink("Firma", FirmaView.class);
         poslovniProstorLink = new RouterLink("Poslovni Prostor", PoslovniProstorView.class);
         kancelarijaLink = new RouterLink("Kancelarija", KancelarijaView.class);
         zaposleniLink = new RouterLink("Zaposleni", ZaposleniView.class);

@@ -31,6 +31,10 @@ public class Firma {
         this.datum_osnivanja = datum_osnivanja;
     }
 
+    public Firma() {
+
+    }
+
     public Firma withId(Long id) {
         if (this.id.equals(id)) {
             return this;
