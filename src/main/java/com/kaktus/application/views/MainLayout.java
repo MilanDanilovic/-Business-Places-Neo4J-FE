@@ -1,5 +1,7 @@
 package com.kaktus.application.views;
 
+import com.kaktus.application.views.pages.KancelarijaView;
+import com.kaktus.application.views.pages.PoslovniProstorView;
 import com.kaktus.application.views.pages.ProjekatView;
 import com.kaktus.application.views.pages.ZaposleniView;
 import com.kaktus.application.views.pregled.PregledView;
@@ -38,8 +40,8 @@ public class MainLayout extends AppLayout {
 
         vlasnikLink = new RouterLink("Vlasnik",PregledView.class);
         firmaLink = new RouterLink("Firma", PregledView.class);
-        poslovniProstorLink = new RouterLink("Poslovni Prostor", ZaposleniView.class);
-        kancelarijaLink = new RouterLink("Kancelarija", ZaposleniView.class);
+        poslovniProstorLink = new RouterLink("Poslovni Prostor", PoslovniProstorView.class);
+        kancelarijaLink = new RouterLink("Kancelarija", KancelarijaView.class);
         zaposleniLink = new RouterLink("Zaposleni", ZaposleniView.class);
         projektiLink = new RouterLink("Projekti", ProjekatView.class);
 
