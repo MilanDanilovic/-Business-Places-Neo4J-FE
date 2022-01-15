@@ -1,14 +1,17 @@
 package com.kaktus.application.views.pages;
 
-import com.kaktus.application.data.model.Kancelarija;
-import com.kaktus.application.data.model.Projekat;
-import com.kaktus.application.data.model.Zaposleni;
+import com.kaktus.application.data.model.*;
 import com.kaktus.application.feign_client.KancelarijaFeignClient;
+import com.kaktus.application.feign_client.PoslovniProstorFeignClient;
 import com.kaktus.application.views.MainLayout;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
@@ -30,6 +33,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.vaadin.klaudeta.PaginatedGrid;
 
 import javax.annotation.PostConstruct;
+import java.time.format.DateTimeFormatter;
 
 @EnableFeignClients
 @Route(value="kancelarija", layout = MainLayout.class)
@@ -39,7 +43,7 @@ public class KancelarijaView extends VerticalLayout {
     TextField brojKancelarija = new TextField();
     TextField kvadraturaKancelarija = new TextField();
     TextField brojRadnikaKancelarija = new TextField();
-    TextField statusKancelarija = new TextField();
+    ComboBox<Boolean> statusKancelarija = new ComboBox<>("Status kancelarija");//statusKancelarija
 
     Label upozorenjeUpdate = new Label();
     Label upozorenjeDelete = new Label();
@@ -50,10 +54,13 @@ public class KancelarijaView extends VerticalLayout {
     private Kancelarija kancelarijaUpdate = new Kancelarija();
     private Kancelarija kancelarijaDelete = new Kancelarija();
 
-    private final KancelarijaFeignClient kancelarijaFeignClient;
 
-    public KancelarijaView(KancelarijaFeignClient kancelarijaFeignClient) {
+    private final KancelarijaFeignClient kancelarijaFeignClient;
+    private final PoslovniProstorFeignClient poslovniProstorFeignClient;
+
+    public KancelarijaView(KancelarijaFeignClient kancelarijaFeignClient, PoslovniProstorFeignClient poslovniProstorFeignClient) {
         this.kancelarijaFeignClient = kancelarijaFeignClient;
+        this.poslovniProstorFeignClient = poslovniProstorFeignClient;
     }
 
     @PostConstruct
@@ -127,6 +134,108 @@ public class KancelarijaView extends VerticalLayout {
         return where.toLowerCase().contains(what.toLowerCase());
     }
 
+    private Dialog dialogCreate(String text,String adresa, Kancelarija kancelarija){
+        Dialog dialog = new Dialog();
+        dialog.add(new Text(text));
+        dialog.setCloseOnEsc(true);
+        dialog.setCloseOnOutsideClick(true);
+
+        Button potvrdiButton = new Button("Da", event -> {
+            dialog.close();
+            try {
+                kancelarijaFeignClient.addKancelarija(adresa,kancelarija);
+                Notification notification = new Notification();
+                notification.setPosition(Notification.Position.MIDDLE);
+                notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                notification.setText("Promene uspesno sacuvane!");
+                notification.setDuration(3000);
+                notification.open();
+
+                refreshGrid();
+                dialog.close();
+                UI.getCurrent().getPage().reload();
+            } catch (Exception e) {
+                Notification notification = new Notification("Greska prilikom cuvanja!", 3000);
+                notification.setPosition(Notification.Position.MIDDLE);
+                notification.open();
+            }
+        });
+
+        potvrdiButton.getStyle().set("margin-right","10px");
+
+        Button odustaniButton = new Button("Ne", event -> {
+            dialog.close();
+        });
+
+        potvrdiButton.addClickShortcut(Key.ENTER);
+        potvrdiButton.addClassName("m-5");
+        odustaniButton.addClassName("m-5");
+
+        dialog.add(new Div( potvrdiButton, odustaniButton));
+        return dialog;
+    }
+
+    private void addKancelarijaToDatabase(){
+        Dialog createKancelarijaDialog = new Dialog();
+        createKancelarijaDialog.open();
+
+        Button save = new Button("Sacuvaj");
+        Button odustani = new Button("Odustani");
+
+        save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        save.setIcon(VaadinIcon.CHECK.create());
+        odustani.setIcon(VaadinIcon.CLOSE.create());
+
+
+        TextField broj_kancelarija = new TextField("Broj kancelarije");
+        TextField kvadratura = new TextField("Kvadratura");
+        TextField broj_radnika = new TextField("Broj radnika");
+
+
+        ComboBox<Boolean> status = new ComboBox<>("Status kancelarije");
+        status.setItems(true, false);
+
+
+        ComboBox<PoslovniProstor> poslovniProstori = new ComboBox<>("Poslovni prostor");
+        poslovniProstori.setItems(poslovniProstorFeignClient.findAllPoslovniProstor());
+        poslovniProstori.setItemLabelGenerator(PoslovniProstor::getAdresa);
+
+
+        save.addClickListener(click->{
+            Kancelarija kancelarija = new Kancelarija();
+
+            kancelarija.setBroj_kancelarije(Long.parseLong(broj_kancelarija.getValue()));
+            kancelarija.setKvadratura(Double.valueOf(kvadratura.getValue()));
+            kancelarija.setBroj_radnika(Long.parseLong(broj_radnika.getValue()));
+            kancelarija.setStatus(status.getValue());
+
+            Dialog dialog = dialogCreate(upozorenjeUpdate.getText(),poslovniProstori.getValue().getAdresa(),kancelarija);
+            dialog.open();
+
+        });
+
+        odustani.addClickListener(click->{
+            createKancelarijaDialog.close();
+            UI.getCurrent().getPage().reload();
+        });
+
+        FormLayout formLayout = new FormLayout();
+        formLayout.add(broj_kancelarija, kvadratura, broj_radnika, status, poslovniProstori);
+
+        FormLayout formLayoutControls = new FormLayout();
+        formLayoutControls.add(
+                save, odustani
+        );
+        formLayout.setResponsiveSteps(
+                new FormLayout.ResponsiveStep("0", 1),
+                new FormLayout.ResponsiveStep("320", 2),
+                new FormLayout.ResponsiveStep("400px", 3),
+                new FormLayout.ResponsiveStep("500px", 4)
+        );
+
+        createKancelarijaDialog.add(formLayout,formLayoutControls);
+    }
+
     private HorizontalLayout createToolsTab(){
 
         HorizontalLayout toolBar = new HorizontalLayout();
@@ -138,7 +247,7 @@ public class KancelarijaView extends VerticalLayout {
         nameFilter.addValueChangeListener(this::onFilter);
 
         createEntity.addClickListener(click -> {
-            //todo
+            addKancelarijaToDatabase();
         });
         createEntity.setIcon(new Icon(VaadinIcon.PLUS));
         createEntity.setText("Dodaj novu kancelariju");
@@ -178,6 +287,8 @@ public class KancelarijaView extends VerticalLayout {
             }
         });
 
+        potvrdiButton.getStyle().set("margin-right","10px");
+
         Button odustaniButton = new Button("Ne", event -> {
             dialog.close();
         });
@@ -215,6 +326,8 @@ public class KancelarijaView extends VerticalLayout {
             }
         });
 
+        potvrdiButton.getStyle().set("margin-right","10px");
+
         Button odustaniButton = new Button("Ne", event -> {
             dialog.close();
         });
@@ -238,12 +351,16 @@ public class KancelarijaView extends VerticalLayout {
         obrisiButton.addClassName("form-buttons");
         odustaniButton.addClassName("form-buttons");
 
+        sacuvajButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
         odustaniButton.setIcon(VaadinIcon.CLOSE.create());
 
         brojKancelarija.setReadOnly(false);
         kvadraturaKancelarija.setReadOnly(false);
         brojRadnikaKancelarija.setReadOnly(false);
         statusKancelarija.setReadOnly(false);
+
+        statusKancelarija.setItems(true,false);
 
         FormLayout formLayoutSideBar = new FormLayout();
         formLayoutSideBar.add(brojKancelarija, kvadraturaKancelarija,
@@ -275,6 +392,8 @@ public class KancelarijaView extends VerticalLayout {
             dialog.open();
 
         });
+
+        sacuvajButton.getStyle().set("margin-right","10px");
 
         obrisiButton.addClickListener(click -> {
             Kancelarija kancelarijeDel= new Kancelarija();
