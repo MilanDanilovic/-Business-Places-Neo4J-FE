@@ -43,9 +43,11 @@ public class ZaposleniView extends VerticalLayout {
     com.vaadin.flow.component.textfield.TextField karticaZaposleni = new com.vaadin.flow.component.textfield.TextField();
 
     Label upozorenjeUpdate = new Label();
+    Label upozorenjeDelete = new Label();
 
     private final PaginatedGrid<Zaposleni> zaposleniGrid =new PaginatedGrid<>();
     private Zaposleni zaposleniUpdate = new Zaposleni();
+    private Zaposleni zaposleniDelete = new Zaposleni();
 
     private final ZaposleniFeignClient zaposleniFeignClient;
 
@@ -83,18 +85,16 @@ public class ZaposleniView extends VerticalLayout {
                 Zaposleni zaposleniPostojeci = click.getFirstSelectedItem().get();
 
                 zaposleniUpdate.setId(zaposleniPostojeci.getId());
+                zaposleniDelete.setId(zaposleniPostojeci.getId());
 
                 if(zaposleniPostojeci.getIme() != null) {
                     imeZaposleni.setValue(zaposleniPostojeci.getIme());
-                   // zaposleniUpdate.setIme(zaposleniPostojeci.getIme());
                 }
                 if(zaposleniPostojeci.getPrezime() != null){
                     prezimeZaposleni.setValue(zaposleniPostojeci.getPrezime());
-                  //  zaposleniUpdate.setPrezime(zaposleniPostojeci.getPrezime());
                 }
                 if(zaposleniPostojeci.getDatum_rodjenja() != null){
                     datumRodjenjaZaposleni.setValue(zaposleniPostojeci.getDatum_rodjenja());
-                  //  zaposleniUpdate.setDatum_rodjenja(zaposleniPostojeci.getDatum_rodjenja());
                 }
                 if(zaposleniPostojeci.getPol() != null) {
                     polZaposleni.setValue(zaposleniPostojeci.getPol());
@@ -104,7 +104,6 @@ public class ZaposleniView extends VerticalLayout {
                 }
                 if(zaposleniPostojeci.getKartica() != null){
                     karticaZaposleni.setValue(String.valueOf(zaposleniPostojeci.getKartica()));
-                  //  zaposleniUpdate.setKartica(zaposleniPostojeci.getKartica());
                 }
 
             }
@@ -131,11 +130,10 @@ public class ZaposleniView extends VerticalLayout {
         dialog.setCloseOnEsc(true);
         dialog.setCloseOnOutsideClick(true);
 
-        Button confirmButton = new Button("Da", event -> {
+        Button potvrdiButton = new Button("Da", event -> {
             dialog.close();
             try {
                 zaposleniFeignClient.updateZaposleni(zaposleni);
-                //UI.getCurrent().navigate("users");
                 Notification notification = new Notification();
                 notification.setPosition(Notification.Position.MIDDLE);
                 notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
@@ -143,22 +141,56 @@ public class ZaposleniView extends VerticalLayout {
                 notification.setDuration(3000);
                 notification.open();
             } catch (Exception e) {
-                //log.debug(e.getMessage());
-                Notification notification = new Notification("Greska prilikom cuvanja!", 3000);//e.getMessage()
+                Notification notification = new Notification("Greska prilikom cuvanja!", 3000);
                 notification.setPosition(Notification.Position.MIDDLE);
                 notification.open();
             }
         });
 
-        Button cancelButton = new Button("Ne", event -> {
+        Button odustaniButton = new Button("Ne", event -> {
             dialog.close();
         });
 
-        confirmButton.addClickShortcut(Key.ENTER);
-        confirmButton.addClassName("m-5");
-        cancelButton.addClassName("m-5");
+        potvrdiButton.addClickShortcut(Key.ENTER);
+        potvrdiButton.addClassName("m-5");
+        odustaniButton.addClassName("m-5");
 
-        dialog.add(new Div( confirmButton, cancelButton));
+        dialog.add(new Div( potvrdiButton, odustaniButton));
+        return dialog;
+    }
+
+    private Dialog dialogDelete(String text, Zaposleni zaposleni){
+        Dialog dialog = new Dialog();
+        dialog.add(new Text(text));
+        dialog.setCloseOnEsc(true);
+        dialog.setCloseOnOutsideClick(true);
+
+        Button potvrdiButton = new Button("Da", event -> {
+            dialog.close();
+            try {
+                zaposleniFeignClient.deleteZaposleni(zaposleni);
+                Notification notification = new Notification();
+                notification.setPosition(Notification.Position.MIDDLE);
+                notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                notification.setText("Uspesno obrisan zaposleni!");
+                notification.setDuration(3000);
+                notification.open();
+            } catch (Exception e) {
+                Notification notification = new Notification("Greska prilikom brisanja!", 3000);
+                notification.setPosition(Notification.Position.MIDDLE);
+                notification.open();
+            }
+        });
+
+        Button odustaniButton = new Button("Ne", event -> {
+            dialog.close();
+        });
+
+        potvrdiButton.addClickShortcut(Key.ENTER);
+        potvrdiButton.addClassName("m-5");
+        odustaniButton.addClassName("m-5");
+
+        dialog.add(new Div( potvrdiButton, odustaniButton));
         return dialog;
     }
 
@@ -216,6 +248,14 @@ public class ZaposleniView extends VerticalLayout {
 
         });
 
+        obrisiButton.addClickListener(click -> {
+            Zaposleni zaposleniDel= new Zaposleni();
+            zaposleniDel.setId(zaposleniDelete.getId());
+
+            Dialog dialog = dialogDelete(upozorenjeDelete.getText(), zaposleniDel);
+            dialog.open();
+        });
+
         odustaniButton.addClickListener(click->{
             sideBarTmp.addClassName("hidden");
         });
@@ -231,6 +271,7 @@ public class ZaposleniView extends VerticalLayout {
         jmbgZaposleni.setLabel("Jmbg");
         karticaZaposleni.setLabel("Kartica");
         upozorenjeUpdate.setText("Da li ste sigurni da zelite da izmenite podatke?");
+        upozorenjeDelete.setText("Da li ste sigurni da zelite da obrisete zaposlenog?");
     }
 
 }

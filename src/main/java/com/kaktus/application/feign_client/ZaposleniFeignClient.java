@@ -13,4 +13,7 @@ public interface ZaposleniFeignClient extends CommonFeignClient<Zaposleni>{
 
     @RequestLine("PUT updateZaposleni")
     void updateZaposleni(@Valid @RequestBody(required = true) Zaposleni zaposleni);
+
+    @RequestLine("DELETE deleteZaposleni")
+    void deleteZaposleni(@Valid @RequestBody(required = true) Zaposleni zaposleni);
 }
