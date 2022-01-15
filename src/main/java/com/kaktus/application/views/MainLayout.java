@@ -17,6 +17,8 @@ import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
+
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 
 /**
@@ -33,9 +35,18 @@ public class MainLayout extends AppLayout {
     public MainLayout(){
         routerLinks = new ArrayList<>();
 
+        vlasnikLink = new RouterLink("Vlasnik",PregledView.class);
+        firmaLink = new RouterLink("Firma", PregledView.class);
+        poslovniProstorLink = new RouterLink("Poslovni Prostor", ZaposleniView.class);
+        kancelarijaLink = new RouterLink("Kancelarija", ZaposleniView.class);
+        zaposleniLink = new RouterLink("Zaposleni", ZaposleniView.class);
+        projektiLink = new RouterLink("Projekti", ZaposleniView.class);
+
         createHeader();
         createDrawer();
     }
+
+
     private void createHeader() {
         MenuBar menuBar = new MenuBar();
         menuBar.addThemeVariants(MenuBarVariant.LUMO_ICON);
@@ -57,67 +68,25 @@ public class MainLayout extends AppLayout {
         addToNavbar(header);
     }
 
+    public void createLinks( RouterLink routerLink,String imageSource, String imageAlt){
+        routerLink.setHighlightCondition(HighlightConditions.sameLocation());
+        Image image = new Image(imageSource,imageAlt);
+        image.getStyle().set("margin-right","10px");
+        image.setWidth("30px");
+        routerLink.add(image);
+        routerLink.addClassName("drawer-route-links");
+        routerLink.addClassName("layout-routes");
+        routerLinks.add(routerLink);
+    }
+
     private void createDrawer() {
 
-        vlasnikLink = new RouterLink("Vlasnik",PregledView.class);
-        vlasnikLink.setHighlightCondition(HighlightConditions.sameLocation());
-        Image vlanikImage = new Image("img/boss.png","boss");
-        vlanikImage.getStyle().set("margin-right","10px");
-        vlanikImage.setWidth("30px");
-        vlasnikLink.add(vlanikImage);
-        vlasnikLink.addClassName("drawer-route-links");
-        vlasnikLink.addClassName("layout-routes");
-        routerLinks.add(vlasnikLink);
-
-        firmaLink = new RouterLink("Firma", PregledView.class);
-        firmaLink.setHighlightCondition(HighlightConditions.sameLocation());
-        Image companyImage = new Image("img/company.png","company");
-        companyImage.getStyle().set("margin-right","10px");
-        companyImage.setWidth("30px");
-        firmaLink.add(companyImage);
-        firmaLink.addClassName("drawer-route-links");
-        firmaLink.addClassName("layout-routes");
-        routerLinks.add(firmaLink);
-
-        poslovniProstorLink = new RouterLink("Poslovni Prostor", ZaposleniView.class);
-        poslovniProstorLink.setHighlightCondition(HighlightConditions.sameLocation());
-        Image poslovniProstorImage = new Image("img/office.png","office");
-        poslovniProstorImage.getStyle().set("margin-right","10px");
-        poslovniProstorImage.setWidth("30px");
-        poslovniProstorLink.add(poslovniProstorImage);
-        poslovniProstorLink.addClassName("drawer-route-links");
-        poslovniProstorLink.addClassName("layout-routes");
-        routerLinks.add(poslovniProstorLink);
-
-        kancelarijaLink = new RouterLink("Kancelarija", ZaposleniView.class);
-        kancelarijaLink.setHighlightCondition(HighlightConditions.sameLocation());
-        Image kancelarijaLinkImage = new Image("img/office-chair.png","office-chair");
-        kancelarijaLinkImage.getStyle().set("margin-right","10px");
-        kancelarijaLinkImage.setWidth("30px");
-        kancelarijaLink.add(kancelarijaLinkImage);
-        kancelarijaLink.addClassName("drawer-route-links");
-        kancelarijaLink.addClassName("layout-routes");
-        routerLinks.add(kancelarijaLink);
-
-        zaposleniLink = new RouterLink("Zaposleni", ZaposleniView.class);
-        zaposleniLink.setHighlightCondition(HighlightConditions.sameLocation());
-        Image zaposleniImage = new Image("img/worker.png","worker");
-        zaposleniImage.getStyle().set("margin-right","10px");
-        zaposleniImage.setWidth("30px");
-        zaposleniLink.add(zaposleniImage);
-        zaposleniLink.addClassName("drawer-route-links");
-        zaposleniLink.addClassName("layout-routes");
-        routerLinks.add(zaposleniLink);
-
-        projektiLink = new RouterLink("Projekti", ZaposleniView.class);
-        projektiLink.setHighlightCondition(HighlightConditions.sameLocation());
-        Image projektiImage = new Image("img/project.png","project");
-        projektiImage.getStyle().set("margin-right","10px");
-        projektiImage.setWidth("30px");
-        projektiLink.add(projektiImage);
-        projektiLink.addClassName("drawer-route-links");
-        projektiLink.addClassName("layout-routes");
-        routerLinks.add(projektiLink);
+        createLinks(vlasnikLink,"img/boss.png","boss");
+        createLinks(firmaLink, "img/company.png","company");
+        createLinks(poslovniProstorLink,"img/office.png","office");
+        createLinks(kancelarijaLink,"img/office-chair.png","office-chair");
+        createLinks(zaposleniLink,"img/worker.png","worker");
+        createLinks(projektiLink,"img/project.png","project");
 
         routerLinks.forEach(el -> {
             el.addFocusListener(listener -> {
